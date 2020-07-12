@@ -20,7 +20,7 @@ public class KafkaProducerService {
     private KafkaTemplate<String, MessageItem> kafkaTemplate;
 
     public void send(MessageItem messageItem){
-        LOG.info("topic='{}', message='{}'", topic, messageItem);
+        LOG.info("Sent By Kafka");
         kafkaTemplate.send(topic, messageItem);
     }
 }
