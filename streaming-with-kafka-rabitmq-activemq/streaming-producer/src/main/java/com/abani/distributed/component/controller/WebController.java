@@ -1,6 +1,7 @@
 package com.abani.distributed.component.controller;
 
 import com.abani.distributed.component.model.MessageItem;
+import com.abani.distributed.component.service.ActiveMQProducerService;
 import com.abani.distributed.component.service.KafkaProducerService;
 import com.abani.distributed.component.service.RabbitMQProducerService;
 import org.slf4j.Logger;
@@ -28,6 +29,9 @@ public class WebController {
     @Autowired
     private RabbitMQProducerService rabbitMQProducerService;
 
+    @Autowired
+    private ActiveMQProducerService activeMQProducerService;
+
     @PostMapping(value = "/publish")
     public void sendMessageToKafkaConsumer(@RequestBody MessageItem messageItem){
         messageItem.setUuid(UUID.randomUUID().toString());
@@ -36,5 +40,6 @@ public class WebController {
         LOG.info("New message: '{}'", messageItem);
         kafkaProducerService.send(messageItem);
         rabbitMQProducerService.send(messageItem);
+        activeMQProducerService.send(messageItem);
     }
 }
