@@ -9,16 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@RestController
-@RequestMapping(value = "/kafka")
+@Controller
 public class WebController {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebController.class);
@@ -32,14 +29,39 @@ public class WebController {
     @Autowired
     private ActiveMQProducerService activeMQProducerService;
 
-    @PostMapping(value = "/publish")
-    public void sendMessageToKafkaConsumer(@RequestBody MessageItem messageItem){
+    @RequestMapping(value = "/publish_kafka", method = RequestMethod.POST)
+    public String sendMessageToKafkaConsumer(@RequestParam String message){
+        MessageItem messageItem = new MessageItem();
+        messageItem.setMessage(message);
         messageItem.setUuid(UUID.randomUUID().toString());
         messageItem.setTime(LocalDateTime.now().toString());
 
         LOG.info("New message: '{}'", messageItem);
         kafkaProducerService.send(messageItem);
+        return "redirect:kafka_producer.html";
+    }
+
+    @RequestMapping(value = "/publish_rabbit", method = RequestMethod.POST)
+    public String sendMessageToRabbitMQConsumer(@RequestParam String message){
+        MessageItem messageItem = new MessageItem();
+        messageItem.setMessage(message);
+        messageItem.setUuid(UUID.randomUUID().toString());
+        messageItem.setTime(LocalDateTime.now().toString());
+
+        LOG.info("New message: '{}'", messageItem);
         rabbitMQProducerService.send(messageItem);
+        return "redirect:rabbitmq_producer.html";
+    }
+
+    @RequestMapping(value = "/publish_active", method = RequestMethod.POST)
+    public String sendMessageToActiveMQConsumer(@RequestParam String message){
+        MessageItem messageItem = new MessageItem();
+        messageItem.setMessage(message);
+        messageItem.setUuid(UUID.randomUUID().toString());
+        messageItem.setTime(LocalDateTime.now().toString());
+
+        LOG.info("New message: '{}'", messageItem);
         activeMQProducerService.send(messageItem);
+        return "redirect:activemq_producer.html";
     }
 }
