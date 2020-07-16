@@ -6,4 +6,4 @@
 In addition, Websocket is implemented in consumer end to listen to the incoming message.
 
 #### Demo
-![Demo](/assets/demo.gif)
+![Demo](/assets/demo.gif?raw=true)
